@@ -15,7 +15,7 @@ const recentTransactions = [
   },
   {
     id: "2",
-    title: "Spesa Esselunga",
+    title: "Spesa",
     category: "Alimentari",
     amount: -85.50,
     type: "expense",
@@ -40,14 +40,22 @@ const recentTransactions = [
     date: "09 Ago 2026",
     icon: LaptopIcon,
   },
+  {
+    id: "5",
+    title: "Sala giochi",
+    category: "Svago",
+    amount: -25.50,
+    type: "expense",
+    date: "09 Ago 2026",
+    icon: LaptopIcon,
+  },
 ]
 
 export function RecentTransactions() {
   return (
-    <Card className="w-full">
+    <Card className="w-full h-full flex flex-col justify-between">
       <CardHeader className="flex flex-row items-center justify-between pb-4">
         <CardTitle className="text-xl">Ultimi Movimenti</CardTitle>
-        {/* Il bottone che porta alla rotta completa */}
         <Button variant="ghost" size="sm" asChild className="hidden sm:flex">
           <Link to="/transactions">
             Vedi tutti <ArrowRight01Icon className="ml-2 w-4 h-4" />
@@ -62,8 +70,6 @@ export function RecentTransactions() {
 
           return (
             <div key={transaction.id} className="flex items-center justify-between">
-              
-              {/* Parte Sinistra: Icona e Testo */}
               <div className="flex items-center gap-4">
                 <div className="p-2 bg-secondary rounded-full">
                   <Icon className="w-5 h-5 text-muted-foreground" />
@@ -75,8 +81,6 @@ export function RecentTransactions() {
                   </p>
                 </div>
               </div>
-
-              {/* Parte Destra: Importo */}
               <div className={`font-semibold ${isIncome ? "text-emerald-500" : ""}`}>
                 {isIncome ? "+" : "-"} €{Math.abs(transaction.amount).toLocaleString("it-IT", { minimumFractionDigits: 2 })}
               </div>
@@ -84,8 +88,6 @@ export function RecentTransactions() {
             </div>
           )
         })}
-
-        {/* Bottone visibile solo su mobile per risparmiare spazio nell'header */}
         <Button variant="outline" className="w-full sm:hidden mt-2" asChild>
           <Link to="/transactions">Vedi tutti i movimenti</Link>
         </Button>

@@ -8,7 +8,7 @@ export function NetWorthSummary() {
   const liquidityPercentage = (availableLiquidity / netWorth) * 100
 
   return (
-    <Card className="w-full">
+    <Card className="h-full flex flex-col justify-between">
       <CardContent className="p-6">
         <div className="flex flex-col sm:flex-row justify-between gap-6">
           

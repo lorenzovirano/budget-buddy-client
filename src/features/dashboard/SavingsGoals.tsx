@@ -29,7 +29,7 @@ const savingsGoals = [
 
 export function SavingsGoals() {
   return (
-    <Card className="w-full h-full flex flex-col">
+    <Card className="w-full h-full flex flex-col justify-between">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
