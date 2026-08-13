@@ -1,7 +1,7 @@
 import { BankSelector } from "./BanksSelector"
 import { NetWorthSummary } from "./NetWorthSummary"
 import { MonthlyCashFlow } from "./MonthlyCashFlow"
-import { SavingsGoals } from "./SavingsGoals"
+import { SavingsGoals } from "../goals/SavingsGoals"
 import { UpcomingRecurring } from "./UpcomingRecurring"
 import { RecentTransactions } from "./RecentTransactions"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"

@@ -4,6 +4,7 @@ import { MainLayout } from "./components/main-layout"
 import { Dashboard } from "./features/dashboard/Dashboard"
 import { Transactions } from "./features/transactions/Transactions"
 import { CategoriesPage } from "@/features/categories/CategoriesPage"
+import { Toaster } from "@/components/ui/sonner"
 
 import { Login } from "./features/auth/Login"
 import { Register } from "./features/auth/Register"
@@ -32,6 +33,7 @@ export default function App() {
           
         </Routes>
       </BrowserRouter>
+      <Toaster richColors />
     </ThemeProvider>
   )
 }
