@@ -1,4 +1,4 @@
-import { Home01Icon, CreditCardIcon, Settings01Icon } from "hugeicons-react"
+import { Home01Icon, CreditCardIcon, Settings01Icon, Tag01Icon } from "hugeicons-react"
 import { LogOut } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuthStore } from "@/stores/useAuthStore"
@@ -19,6 +19,7 @@ import {
 const items = [
   { title: "Dashboard", url: "/dashboard", icon: Home01Icon },
   { title: "Transazioni", url: "/transactions", icon: CreditCardIcon },
+  { title: "Categorie", url: "/categories", icon: Tag01Icon },
   { title: "Impostazioni", url: "/settings", icon: Settings01Icon },
 ]
 

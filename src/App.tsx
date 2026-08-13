@@ -3,8 +3,8 @@ import { ThemeProvider } from "./components/theme-provider"
 import { MainLayout } from "./components/main-layout"
 import { Dashboard } from "./features/dashboard/Dashboard"
 import { Transactions } from "./features/transactions/Transactions"
+import { CategoriesPage } from "@/features/categories/CategoriesPage"
 
-// Importiamo i nuovi componenti auth
 import { Login } from "./features/auth/Login"
 import { Register } from "./features/auth/Register"
 import { ProtectedRoute } from "./features/auth/ProtectedRoute"
@@ -25,6 +25,7 @@ export default function App() {
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/transactions" element={<Transactions />} />
+              <Route path="/categories" element={<CategoriesPage />} />
             </Route>
             
           </Route>
