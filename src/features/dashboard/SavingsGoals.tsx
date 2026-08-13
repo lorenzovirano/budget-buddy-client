@@ -24,6 +24,13 @@ const savingsGoals = [
     currentAmount: 5450,
     targetAmount: 5450,
     indicatorColor: "bg-zinc-800 dark:bg-zinc-200",
+  },
+  {
+    id: "g4",
+    title: "Fondo di Emergenza",
+    currentAmount: 5450,
+    targetAmount: 5450,
+    indicatorColor: "bg-zinc-800 dark:bg-zinc-200",
   }
 ]
 
@@ -47,7 +54,7 @@ export function SavingsGoals() {
         </div>
       </CardHeader>
       
-      <CardContent className="flex-1 flex flex-col justify-between gap-6">
+      <CardContent className="flex-1 flex flex-col justify-start gap-6">
         {savingsGoals.map((goal) => {
           const percentage = Math.min((goal.currentAmount / goal.targetAmount) * 100, 100)
           const isCompleted = percentage >= 100
