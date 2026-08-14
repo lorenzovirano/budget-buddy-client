@@ -1,9 +1,10 @@
 import { BankSelector } from "../banks/BanksSelector"
-import { NetWorthSummary } from "./NetWorthSummary"
-import { MonthlyCashFlow } from "./MonthlyCashFlow"
+import { NetWorthSummary } from "./components/NetWorthSummary"
+import { AccountsDistribution } from "./components/AccountDistribuition"
+import { MonthlyCashFlow } from "./components/MonthlyCashFlow"
 import { SavingsGoals } from "../goals/SavingsGoals"
-import { UpcomingRecurring } from "./UpcomingRecurring"
-import { RecentTransactions } from "./RecentTransactions"
+import { UpcomingRecurring } from "./components/UpcomingRecurring"
+import { RecentTransactions } from "./components/RecentTransactions"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { LineChart } from "lucide-react"
@@ -23,20 +24,35 @@ export function Dashboard() {
         <BankSelector />
       </div>
 
-      {/* LIVELLO 1: OVERVIEW (Il "Quanto ho?" e "Come sta andando?") */}
+      {/* LIVELLO 1: OVERVIEW (Patrimonio + Tabs Dettagli) */}
       <div className="grid gap-6 md:grid-cols-3">
-        {/* Il Patrimonio prende 2 colonne su schermi medi in su */}
+        {/* Il Patrimonio prende 2 colonne */}
         <div className="md:col-span-2">
           <NetWorthSummary />
         </div>
         
-        {/* Il Cash Flow prende 1 colonna (di fianco su desktop, sotto su mobile) */}
-        <div className="md:col-span-1">
-          <MonthlyCashFlow />
+        {/* Nuova Tabbed View per Cash Flow / Allocazione (1 colonna) */}
+        <div className="md:col-span-1 h-full flex flex-col">
+          <Tabs defaultValue="cashflow" className="w-full h-full flex flex-col">
+            
+            <TabsList className="grid w-full grid-cols-2 mb-4">
+              <TabsTrigger value="cashflow">Cash Flow</TabsTrigger>
+              <TabsTrigger value="liquidity">Liquidità</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="cashflow" className="mt-0 flex-1 focus-visible:outline-none focus-visible:ring-0">
+              <MonthlyCashFlow />
+            </TabsContent>
+            
+            <TabsContent value="liquidity" className="mt-0 flex-1 focus-visible:outline-none focus-visible:ring-0">
+              <AccountsDistribution />
+            </TabsContent>
+            
+          </Tabs>
         </div>
       </div>
 
-      {/* LIVELLO 2: ANALYTICS / TRENDS (Il "Trend nel tempo") */}
+      {/* LIVELLO 2: ANALYTICS / TRENDS (Il grafico ora respira su tutta la larghezza) */}
       <div className="w-full">
         <Card className="w-full">
           <CardHeader>
@@ -47,14 +63,14 @@ export function Dashboard() {
           </CardHeader>
           <CardContent>
             {/* Segnaposto per futuro grafico Recharts */}
-            <div className="w-full h-[350px] border-2 border-dashed rounded-xl flex items-center justify-center text-muted-foreground bg-muted/10">
+            <div className="w-full h-[300px] border-2 border-dashed rounded-xl flex items-center justify-center text-muted-foreground bg-muted/10">
               Area Chart Recharts in costruzione...
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* LIVELLO 3: DETTAGLI & AZIONI (Il "Cosa sto facendo e cosa farò?") */}
+      {/* LIVELLO 3: DETTAGLI & AZIONI */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7 items-start">
         
         {/* COLONNA SINISTRA (4 colonne): Macro Obiettivi */}
@@ -66,18 +82,15 @@ export function Dashboard() {
         <div className="md:col-span-1 lg:col-span-3 h-full">
           <Tabs defaultValue="recent" className="w-full">
             
-            {/* Il selettore dei Tab (Occupa tutto lo spazio orizzontale) */}
             <TabsList className="grid w-full grid-cols-2 mb-4">
               <TabsTrigger value="recent">Ultimi Movimenti</TabsTrigger>
               <TabsTrigger value="upcoming">In Arrivo</TabsTrigger>
             </TabsList>
             
-            {/* Contenuto Tab 1: Il Passato */}
             <TabsContent value="recent" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
               <RecentTransactions />
             </TabsContent>
             
-            {/* Contenuto Tab 2: Il Futuro */}
             <TabsContent value="upcoming" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
               <UpcomingRecurring />
             </TabsContent>

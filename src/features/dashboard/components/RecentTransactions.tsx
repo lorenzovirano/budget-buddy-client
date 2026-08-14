@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import { ArrowRight01Icon, ArrowDownRight01Icon, ArrowUpRight01Icon } from "hugeicons-react"
 import { Loader2 } from "lucide-react"
-import { useTransactions } from "../transactions/api/useTransactions"
+import { useTransactions } from "../../transactions/api/useTransactions"
 
 export function RecentTransactions() {
   const { data: transactions, isLoading } = useTransactions()
