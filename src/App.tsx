@@ -4,6 +4,7 @@ import { MainLayout } from "./components/main-layout"
 import { Dashboard } from "./features/dashboard/Dashboard"
 import { Transactions } from "./features/transactions/Transactions"
 import { CategoriesPage } from "@/features/categories/CategoriesPage"
+import { BanksPage } from "./features/banks/BanksPage"
 import { Toaster } from "@/components/ui/sonner"
 
 import { Login } from "./features/auth/Login"
@@ -27,6 +28,7 @@ export default function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/categories" element={<CategoriesPage />} />
+              <Route path="/banks" element={<BanksPage />} />
             </Route>
             
           </Route>

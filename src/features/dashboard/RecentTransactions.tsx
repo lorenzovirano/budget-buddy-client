@@ -55,7 +55,7 @@ export function RecentTransactions() {
         ) : (
           recentTransactions.map((tx) => {
             const isIncome = tx.amount > 0;
-            const Icon = isIncome ? ArrowDownRight01Icon : ArrowUpRight01Icon;
+            const Icon = isIncome  ?ArrowUpRight01Icon : ArrowDownRight01Icon;
             
             const categoryName = typeof tx.category === 'object' && tx.category !== null 
               ? (tx.category as any).name 

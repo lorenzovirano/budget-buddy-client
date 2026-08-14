@@ -1,4 +1,4 @@
-import { BankSelector } from "./BanksSelector"
+import { BankSelector } from "../banks/BanksSelector"
 import { NetWorthSummary } from "./NetWorthSummary"
 import { MonthlyCashFlow } from "./MonthlyCashFlow"
 import { SavingsGoals } from "../goals/SavingsGoals"
