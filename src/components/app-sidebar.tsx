@@ -13,7 +13,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarFooter
+  SidebarFooter,
+  useSidebar // <-- 1. Importa l'hook
 } from "@/components/ui/sidebar"
 
 const items = [
@@ -28,10 +29,20 @@ const items = [
 export function AppSidebar() {
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
+  
+  // 2. Estrai isMobile e setOpenMobile per gestire la chiusura
+  const { setOpenMobile, isMobile } = useSidebar()
 
   const handleLogout = () => {
     logout()
     navigate("/login")
+  }
+
+  // Funzione per chiudere la sidebar solo se siamo su schermo mobile
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setOpenMobile(false)
+    }
   }
 
   const initials = user?.username 
@@ -50,7 +61,7 @@ export function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <Link to={item.url}>
+                    <Link to={item.url} onClick={handleLinkClick}>
                       <item.icon />
                       <span>{item.title}</span>
                     </Link>
@@ -66,7 +77,6 @@ export function AppSidebar() {
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-3 px-1">
             <Avatar className="h-9 w-9">
-              {/* TODO: aggoungere la foto profilo <AvatarImage src={user.avatarUrl} /> */}
               <AvatarFallback className="bg-primary/10 text-primary font-semibold">
                 {initials}
               </AvatarFallback>
