@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { PlusSignIcon } from "hugeicons-react"
 import {
@@ -13,64 +13,72 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
-import { CalendarIcon } from "lucide-react" // Oppure l'icona che preferisci
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { it } from "date-fns/locale"
 import { cn } from "@/lib/utils"
+
 import { useCreateTransaction } from "./api/useTransactions"
-import { useTypes, useCategories } from "@/features/categories/api/useCategories" 
+import { useTypes, useCategories } from "@/features/categories/api/useCategories"
+import { useBanks } from "@/features/banks/api/useBanks"
 
 export function TransactionFAB() {
   const [open, setOpen] = useState(false)
+  const [type, setType] = useState<"expense" | "income" | "transfer">("expense") 
   const [amount, setAmount] = useState("")
   const [description, setDescription] = useState("")
   const [date, setDate] = useState<Date>(new Date())
-  const [selectedTypeId, setSelectedTypeId] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
+  const [account, setAccount] = useState("")
+  const [toAccount, setToAccount] = useState("")
   const [errorMsg, setErrorMsg] = useState("")
   
   const createMutation = useCreateTransaction()
   
   const { data: types } = useTypes()
-  const { data: categories } = useCategories(selectedTypeId)
+  const { data: banks } = useBanks()
+
+
+  const currentTypeObj = types?.find((t: any) => {
+    const name = t.name.toLowerCase();
+    if (type === "expense") return name.includes("uscita") || name.includes("expense") || name.includes("spesa") || name.includes("negativo");
+    if (type === "income") return name.includes("entrata") || name.includes("income") || name.includes("positivo");
+    return false;
+  })
+  
+  const typeIdForCategories = currentTypeObj?._id || ""
+  const { data: categories } = useCategories(typeIdForCategories)
+
+  useEffect(() => {
+    setSelectedCategory("")
+    setErrorMsg("")
+  }, [type])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setErrorMsg("")
-    const numericAmount = parseFloat(amount)
+    
+    const numericAmount = Math.abs(parseFloat(amount))
 
-    if (!selectedTypeId) {
-      setErrorMsg("Seleziona il tipo di movimento")
-      return
+    if (!account) {
+      return setErrorMsg("Seleziona il conto di origine")
     }
 
-    const currentTypeObj = types?.find((t: any) => t._id === selectedTypeId)
-    const typeName = currentTypeObj?.name?.toLowerCase() || ""
-
-    const isIncomeType = typeName.includes("entrata") || typeName.includes("income") || typeName.includes("positivo")
-    const isExpenseType = typeName.includes("uscita") || typeName.includes("expense") || typeName.includes("spesa") || typeName.includes("negativo")
-
-    if (isIncomeType && numericAmount < 0) {
-      setErrorMsg("Un'entrata non può avere un importo negativo.")
-      return
-    }
-
-    if (isExpenseType && numericAmount > 0) {
-      setErrorMsg("Un'uscita non può avere un importo positivo.")
-      return
-    }
-
-    if (!selectedCategory) {
-      setErrorMsg("Seleziona una categoria")
-      return
+    if (type === 'transfer') {
+      if (!toAccount) return setErrorMsg("Seleziona il conto di destinazione")
+      if (account === toAccount) return setErrorMsg("Il conto di destinazione deve essere diverso da quello di origine")
+    } else {
+      if (!selectedCategory) return setErrorMsg("Seleziona una categoria")
     }
 
     createMutation.mutate(
       {
         amount: numericAmount,
+        type,
+        account,
+        ...(type === 'transfer' ? { toAccount } : { category: selectedCategory }),
         description,
-        type: numericAmount >= 0 ? "income" : "expense",
-        category: selectedCategory,
         date: date.toISOString(),
       },
       {
@@ -79,9 +87,11 @@ export function TransactionFAB() {
           setAmount("")
           setDescription("")
           setDate(new Date())
-          setSelectedTypeId("")
+          setAccount("")
+          setToAccount("")
           setSelectedCategory("")
           setErrorMsg("")
+          setType("expense")
         },
       }
     )
@@ -102,49 +112,70 @@ export function TransactionFAB() {
         <DialogHeader>
           <DialogTitle>Nuovo Movimento</DialogTitle>
           <DialogDescription>
-            Aggiungi un'entrata o un'uscita al tuo bilancio.
+            Registra una transazione o sposta fondi.
           </DialogDescription>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 py-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 py-2">
           {errorMsg && (
             <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md font-medium">
               {errorMsg}
             </div>
           )}
 
-          <div className="space-y-2">
-            <Label>Tipo Movimento</Label>
-            <select
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              value={selectedTypeId}
-              onChange={(e) => {
-                setSelectedTypeId(e.target.value)
-                setSelectedCategory("")
-                setErrorMsg("")
-              }}
-              required
-            >
-              <option value="" disabled>Seleziona tipo...</option>
-              {types?.map((t: any) => (
-                <option key={t._id} value={t._id}>
-                  {t.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Tabs value={type} onValueChange={(val: any) => setType(val)} className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="expense">Uscita</TabsTrigger>
+              <TabsTrigger value="income">Entrata</TabsTrigger>
+              <TabsTrigger value="transfer">Giroconto</TabsTrigger>
+            </TabsList>
+          </Tabs>
 
-          <div className="space-y-2">
+          <div className="space-y-2 mt-2">
             <Label>Importo (€)</Label>
             <Input
               type="number"
               step="0.01"
-              placeholder="es. -50.00 o 1200"
+              min="0"
+              placeholder="es. 50.00"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               required
             />
           </div>
+
+          <div className="space-y-2">
+            <Label>{type === 'transfer' ? "Dal conto" : "Conto"}</Label>
+            <select
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              value={account}
+              onChange={(e) => setAccount(e.target.value)}
+              required
+            >
+              <option value="" disabled>Seleziona conto...</option>
+              {banks?.map((b: any) => (
+                <option key={b._id} value={b._id}>{b.bankName}</option>
+              ))}
+            </select>
+          </div>
+
+          {type === 'transfer' && (
+            <div className="space-y-2">
+              <Label>Al conto (Destinazione)</Label>
+              <select
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                value={toAccount}
+                onChange={(e) => setToAccount(e.target.value)}
+                required
+              >
+                <option value="" disabled>Seleziona destinazione...</option>
+                {/* Filtra la banca di origine per evitare errori stupidi */}
+                {banks?.filter((b: any) => b._id !== account).map((b: any) => (
+                  <option key={b._id} value={b._id}>{b.bankName}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Calendar Shadcn Popover */}
           <div className="space-y-2 flex flex-col">
@@ -172,37 +203,39 @@ export function TransactionFAB() {
             </Popover>
           </div>
 
-          <div className="space-y-2">
-            <Label>Categoria</Label>
-            <select
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              disabled={!selectedTypeId}
-              required
-            >
-              <option value="" disabled>
-                {selectedTypeId ? "Seleziona una categoria..." : "Prima seleziona il tipo..."}
-              </option>
-              {categories?.map((cat: any) => (
-                <option key={cat._id} value={cat._id}>
-                  {cat.name}
+          {type !== 'transfer' && (
+            <div className="space-y-2">
+              <Label>Categoria</Label>
+              <select
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                disabled={!typeIdForCategories}
+                required
+              >
+                <option value="" disabled>
+                  {typeIdForCategories ? "Seleziona una categoria..." : "Caricamento categorie..."}
                 </option>
-              ))}
-            </select>
-          </div>
+                {categories?.map((cat: any) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label>Descrizione (Opzionale)</Label>
             <Input
-              placeholder="es. Spesa supermercato"
+              placeholder={type === 'transfer' ? "es. Giroconto o Prelievo" : "es. Spesa supermercato"}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
           <Button type="submit" className="w-full mt-2" disabled={createMutation.isPending}>
-            {createMutation.isPending ? "Salvataggio..." : "Crea Movimento"}
+            {createMutation.isPending ? "Salvataggio..." : "Salva Operazione"}
           </Button>
         </form>
       </DialogContent>

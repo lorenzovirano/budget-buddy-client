@@ -3,12 +3,24 @@ import { api } from '@/lib/api';
 
 export interface Transaction {
   _id: string;
-  type: string;
-  category: string;
+  type: 'income' | 'expense' | 'transfer';
+  account: any;
+  toAccount?: any;
+  category?: any;
   description?: string;
   amount: number;
   date: string;
   user: string;
+}
+
+export interface CreateTransactionPayload {
+  type: 'income' | 'expense' | 'transfer';
+  amount: number;
+  account: string;
+  toAccount?: string;
+  category?: string;
+  description?: string;
+  date?: string;
 }
 
 export function useTransactions() {
@@ -25,12 +37,13 @@ export function useCreateTransaction() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (data: { type: string; category: string; description?: string; amount: number; date: string }) => {
+    mutationFn: async (data: CreateTransactionPayload) => {
       const response = await api.post('/transaction/create', data);
       return response.data.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['banks'] });
     },
   });
 }
@@ -45,6 +58,7 @@ export function useDeleteTransaction() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
+      queryClient.invalidateQueries({ queryKey: ['banks'] });
     },
   });
 }
