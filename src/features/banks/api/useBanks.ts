@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 export interface Bank {
   _id: string;
   bankName: string;
-  accountType: 'OPERATIVE' | 'INVESTMENT';
+  accountType: 'OPERATIVE' | 'INVESTMENT' | 'CASH';
   identifier?: string;
 }
 

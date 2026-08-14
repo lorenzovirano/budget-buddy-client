@@ -1,11 +1,82 @@
+import { useMemo } from "react"
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Wallet01Icon, Coins01Icon } from "hugeicons-react"
+import { useTransactions } from "@/features/transactions/api/useTransactions"
+import { useBanks } from "@/features/banks/api/useBanks"
 
 export function NetWorthSummary() {
-  const netWorth = 24500.00
-  const availableLiquidity = 5450.00
+  const { data: transactions, isLoading: txLoading } = useTransactions()
+  const { data: banks, isLoading: banksLoading } = useBanks()
 
-  const liquidityPercentage = (availableLiquidity / netWorth) * 100
+const { netWorth, availableLiquidity } = useMemo(() => {
+    if (!transactions || !banks) return { netWorth: 0, availableLiquidity: 0 }
+
+    const balances: Record<string, number> = {}
+    banks.forEach(b => (balances[b._id] = 0))
+
+    transactions.forEach(tx => {
+      const accountId = typeof tx.account === 'object' ? tx.account?._id : tx.account;
+      const toAccountId = typeof tx.toAccount === 'object' ? tx.toAccount?._id : tx.toAccount;
+      
+      const amount = Number(tx.amount)
+      
+      if (!accountId) return;
+
+      if (tx.type === 'income') {
+        balances[accountId] += amount
+      } 
+      else if (tx.type === 'expense') {
+        balances[accountId] += amount
+      } 
+      else if (tx.type === 'transfer') {
+        balances[accountId] -= amount 
+        if (toAccountId) {
+          balances[toAccountId] += amount
+        }
+      }
+    })
+
+    let total = 0
+    let available = 0
+
+    banks.forEach(bank => {
+      const bankBalance = balances[bank._id] || 0
+      total += bankBalance
+      
+      if (bank.accountType === 'OPERATIVE' || bank.accountType === 'CASH') {
+        available += bankBalance
+      }
+    })
+
+    return { netWorth: total, availableLiquidity: available }
+  }, [transactions, banks])
+
+  const isLoading = txLoading || banksLoading
+  
+  const liquidityPercentage = netWorth > 0 ? (availableLiquidity / netWorth) * 100 : 0
+
+  if (isLoading) {
+    return (
+      <Card className="h-full flex flex-col justify-between">
+        <CardContent className="p-6">
+          <div className="flex flex-col sm:flex-row justify-between gap-6">
+            <div className="space-y-4 flex-1">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-10 w-48" />
+              <Skeleton className="h-4 w-40" />
+            </div>
+            <div className="hidden sm:block w-px bg-border my-2" />
+            <div className="space-y-4 flex-1 sm:items-end flex flex-col">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-8 w-36" />
+              <Skeleton className="h-4 w-full mt-2" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card className="h-full flex flex-col justify-between">
@@ -20,10 +91,10 @@ export function NetWorthSummary() {
               </h3>
             </div>
             <div className="text-4xl font-bold tracking-tight">
-              € {netWorth.toLocaleString("it-IT", { minimumFractionDigits: 2 })}
+              € {netWorth.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
             <p className="text-sm text-muted-foreground">
-              Inclusi investimenti e fondi di emergenza
+              Inclusi investimenti e liquidità
             </p>
           </div>
 
@@ -37,7 +108,7 @@ export function NetWorthSummary() {
               </h3>
             </div>
             <div className="text-3xl font-semibold text-primary">
-              € {availableLiquidity.toLocaleString("it-IT", { minimumFractionDigits: 2 })}
+              € {availableLiquidity.toLocaleString("it-IT", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
         
             <div className="w-full sm:w-1/2 mt-2">
@@ -46,8 +117,8 @@ export function NetWorthSummary() {
               </div>
               <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-primary rounded-full" 
-                  style={{ width: `${liquidityPercentage}%` }}
+                  className="h-full bg-primary rounded-full transition-all duration-500 ease-out" 
+                  style={{ width: `${Math.min(liquidityPercentage, 100)}%` }}
                 />
               </div>
             </div>
