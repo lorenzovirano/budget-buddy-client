@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useBanks, useCreateBank, useDeleteBank, type Bank } from "./api/useBanks"
+import { useBanks, useCreateBank, useDeleteBank } from "./api/useBanks"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"

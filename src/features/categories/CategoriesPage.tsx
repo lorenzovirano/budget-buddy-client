@@ -37,13 +37,14 @@ export function CategoriesPage() {
       { name: newCategoryName, typeId: activeTab },
       {
         onSuccess: () => {
-          setIsModalOpen(false) // Chiudi il modale
-          setNewCategoryName("") // Pulisci l'input
+          setIsModalOpen(false)
+          setNewCategoryName("")
         }
       }
     )
   }
 
+  /*
   const handleDelete = (id: string) => {
     if (confirm("Sei sicuro di voler eliminare questa categoria?")) {
       deleteMutation.mutate({ id, typeId: activeTab })
@@ -61,6 +62,7 @@ export function CategoriesPage() {
       }
     )
   }
+*/
 
   if (isLoadingTypes) {
     return (
