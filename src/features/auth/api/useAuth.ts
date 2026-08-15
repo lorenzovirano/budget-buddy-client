@@ -4,7 +4,7 @@ import { useAuthStore } from '@/stores/useAuthStore'
 import { useNavigate } from 'react-router-dom'
 
 type LoginDTO = { username: string; password: string }
-type RegisterDTO = LoginDTO & { username: string }
+type RegisterDTO = LoginDTO & { email: string }
 
 export function useLogin() {
   const setAuth = useAuthStore((state) => state.setAuth)

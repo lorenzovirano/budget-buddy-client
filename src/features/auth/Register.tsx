@@ -17,7 +17,7 @@ export function Register() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    registerMutation.mutate({ username, password })
+    registerMutation.mutate({ username, email, password })
   }
 
   return (
