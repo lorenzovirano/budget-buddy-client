@@ -51,7 +51,7 @@ export function useCreateCategory() {
 export function useUpdateCategory() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ id, name, typeId }: { id: string; name: string; typeId: string }) => {
+    mutationFn: async ({ id, name }: { id: string; name: string; typeId: string }) => {
       const res = await api.put(`/categories/${id}`, { name })
       return res.data
     },
@@ -64,7 +64,7 @@ export function useUpdateCategory() {
 export function useDeleteCategory() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async ({ id, typeId }: { id: string; typeId: string }) => {
+    mutationFn: async ({ id }: { id: string; typeId: string }) => {
       const res = await api.delete(`/categories/${id}`)
       return res.data
     },
