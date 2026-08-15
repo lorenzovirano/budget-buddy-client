@@ -18,11 +18,10 @@ export function Transactions() {
   const { data: transactions, isLoading, error } = useTransactions()
   const deleteMutation = useDeleteTransaction()
   
-  // Stato per gestire l'alert di conferma
   const [txToDelete, setTxToDelete] = useState<string | null>(null)
 
   return (
-    <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full p-6">
+    <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Transazioni</h2>
         <p className="text-muted-foreground mt-2">Lista di tutti i movimenti registrati.</p>

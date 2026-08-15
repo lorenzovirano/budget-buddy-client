@@ -1,5 +1,5 @@
-import { Home01Icon, CreditCardIcon, Settings01Icon, Tag01Icon, BankIcon, Refresh03Icon } from "hugeicons-react"
-import { LogOut } from "lucide-react"
+import { Home01Icon, CreditCardIcon, Settings01Icon, Tag01Icon, BankIcon, Refresh03Icon, Logout01Icon } from "hugeicons-react"
+import { TrendingUp } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { Button } from "@/components/ui/button"
@@ -23,7 +23,7 @@ const items = [
   { title: "Categorie", url: "/categories", icon: Tag01Icon },
   { title: "Banche", url: "/banks", icon: BankIcon },
   { title: "Uscite ricorrenti", url: "/recurring", icon: Refresh03Icon },
-  { title: "Investimenti", url: "/investments", icon: Refresh03Icon },
+  { title: "Investimenti", url: "/investments", icon: TrendingUp },
   { title: "Impostazioni", url: "/settings", icon: Settings01Icon },
 ]
 
@@ -94,7 +94,7 @@ export function AppSidebar() {
             className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30" 
             onClick={handleLogout}
           >
-            <LogOut className="mr-2 h-4 w-4" />
+            <Logout01Icon className="mr-2 h-4 w-4" />
             Esci
           </Button>
           

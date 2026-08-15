@@ -30,12 +30,10 @@ export function RecurringPage() {
   const [selectedCategory, setSelectedCategory] = useState("")
   const [errorMsg, setErrorMsg] = useState("")
 
-  // Dati
   const { data: recurringList, isLoading } = useRecurring()
   const createMutation = useCreateRecurring()
   const { data: banks } = useBanks()
   
-  // Categorie dinamiche in base al tipo
   const { data: types } = useTypes()
   const currentTypeObj = types?.find((t: any) => {
     const name = t.name.toLowerCase();
@@ -46,7 +44,6 @@ export function RecurringPage() {
   const typeIdForCategories = currentTypeObj?._id || ""
   const { data: categories } = useCategories(typeIdForCategories)
 
-  // Reset category on type change
   useEffect(() => {
     setSelectedCategory("")
     setErrorMsg("")
@@ -89,7 +86,7 @@ export function RecurringPage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full p-4 md:p-8">
+    <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full">
       
       {/* HEADER PAGE */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useGetPortfolio, useAddInvestment, useDeleteInvestment } from "./api/useInvestments"
-import { useBanks } from "@/features/banks/api/useBanks" // <--- Importiamo i conti bancari
+import { useBanks } from "@/features/banks/api/useBanks"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,17 +21,15 @@ const ASSET_LIST = [
 
 export function InvestmentsPage() {
   const { data: portfolio, isLoading: isPortfolioLoading } = useGetPortfolio()
-  const { data: banks, isLoading: isBanksLoading } = useBanks() // Fetch dei conti
+  const { data: banks, isLoading: isBanksLoading } = useBanks()
   const addMutation = useAddInvestment()
   const deleteMutation = useDeleteInvestment()
   
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isComboboxOpen, setIsComboboxOpen] = useState(false)
   
-  // Stato per la modale di errore custom
   const [errorMsg, setErrorMsg] = useState("")
 
-  // Stati del form
   const [bankId, setBankId] = useState("")
   const [symbol, setSymbol] = useState("")
   const [type, setType] = useState<"crypto" | "stock" | "etf">("crypto")
@@ -79,7 +77,7 @@ export function InvestmentsPage() {
   const isGlobalProfit = (summary?.totalGlobalProfitLoss ?? 0) >= 0
 
   return (
-    <div className="p-6 max-w-6xl mx-auto space-y-6">
+    <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full">
       
       {/* MODALE DI ERRORE CUSTOM */}
       <Dialog open={!!errorMsg} onOpenChange={() => setErrorMsg("")}>

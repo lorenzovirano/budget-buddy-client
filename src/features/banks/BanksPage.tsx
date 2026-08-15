@@ -39,7 +39,7 @@ export function BanksPage() {
   }
 
   return (
-    <div className="p-6 w-full max-w-5xl mx-auto">
+    <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Conti e Carte</h1>
