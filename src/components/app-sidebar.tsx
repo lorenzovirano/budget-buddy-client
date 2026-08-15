@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
-  useSidebar // <-- 1. Importa l'hook
+  useSidebar
 } from "@/components/ui/sidebar"
 
 const items = [
@@ -23,6 +23,7 @@ const items = [
   { title: "Categorie", url: "/categories", icon: Tag01Icon },
   { title: "Banche", url: "/banks", icon: BankIcon },
   { title: "Uscite ricorrenti", url: "/recurring", icon: Refresh03Icon },
+  { title: "Investimenti", url: "/investments", icon: Refresh03Icon },
   { title: "Impostazioni", url: "/settings", icon: Settings01Icon },
 ]
 
@@ -30,7 +31,6 @@ export function AppSidebar() {
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
   
-  // 2. Estrai isMobile e setOpenMobile per gestire la chiusura
   const { setOpenMobile, isMobile } = useSidebar()
 
   const handleLogout = () => {
@@ -38,7 +38,6 @@ export function AppSidebar() {
     navigate("/login")
   }
 
-  // Funzione per chiudere la sidebar solo se siamo su schermo mobile
   const handleLinkClick = () => {
     if (isMobile) {
       setOpenMobile(false)

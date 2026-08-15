@@ -4,12 +4,14 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Wallet01Icon, Coins01Icon } from "hugeicons-react"
 import { useTransactions } from "@/features/transactions/api/useTransactions"
 import { useBanks } from "@/features/banks/api/useBanks"
+import { useGetPortfolio } from "@/features/investments/api/useInvestments" // <--- Aggiunto import
 
 export function NetWorthSummary() {
   const { data: transactions, isLoading: txLoading } = useTransactions()
   const { data: banks, isLoading: banksLoading } = useBanks()
+  const { data: portfolio, isLoading: portfolioLoading } = useGetPortfolio() // <--- Fetch dati portafoglio
 
-const { netWorth, availableLiquidity } = useMemo(() => {
+  const { netWorth, availableLiquidity } = useMemo(() => {
     if (!transactions || !banks) return { netWorth: 0, availableLiquidity: 0 }
 
     const balances: Record<string, number> = {}
@@ -37,22 +39,27 @@ const { netWorth, availableLiquidity } = useMemo(() => {
       }
     })
 
-    let total = 0
+    let totalBankBalances = 0
     let available = 0
 
     banks.forEach(bank => {
       const bankBalance = balances[bank._id] || 0
-      total += bankBalance
+      totalBankBalances += bankBalance
       
       if (bank.accountType === 'OPERATIVE' || bank.accountType === 'CASH') {
         available += bankBalance
       }
     })
 
-    return { netWorth: total, availableLiquidity: available }
-  }, [transactions, banks])
+    // <--- Aggiungiamo il valore totale degli investimenti al Patrimonio Netto
+    const investmentsTotal = portfolio?.summary?.totalValue || 0;
+    const total = totalBankBalances + investmentsTotal;
 
-  const isLoading = txLoading || banksLoading
+    return { netWorth: total, availableLiquidity: available }
+  }, [transactions, banks, portfolio]) // <--- Aggiunto portfolio alle dipendenze
+
+  // <--- Aggiornato l'isLoading per aspettare anche gli investimenti
+  const isLoading = txLoading || banksLoading || portfolioLoading
   
   const liquidityPercentage = netWorth > 0 ? (availableLiquidity / netWorth) * 100 : 0
 

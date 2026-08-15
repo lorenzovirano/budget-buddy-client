@@ -11,6 +11,7 @@ import { Login } from "./features/auth/Login"
 import { Register } from "./features/auth/Register"
 import { ProtectedRoute } from "./features/auth/ProtectedRoute"
 import { RecurringPage } from "./features/recurrings/Recurring"
+import { InvestmentsPage } from "./features/investments/InvestmentPage"
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
               <Route path="/categories" element={<CategoriesPage />} />
               <Route path="/banks" element={<BanksPage />} />
               <Route path="/recurring" element={<RecurringPage />} />
+              <Route path="/investments" element={<InvestmentsPage />} />
             </Route>
             
           </Route>
