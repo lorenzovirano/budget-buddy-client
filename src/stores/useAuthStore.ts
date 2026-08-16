@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { queryClient } from '@/main'
+
 
 interface User {
   id: string
@@ -20,7 +22,10 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       setAuth: (user, token) => set({ user, token }),
-      logout: () => set({ user: null, token: null }),
+      logout: () => {
+        queryClient.clear()
+        set({ user: null, token: null })
+      },
     }),
     {
       name: 'budget-buddy-auth',

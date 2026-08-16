@@ -1,21 +1,30 @@
-import { useState } from "react"
-import { Link } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { Link, useSearchParams } from "react-router-dom"
 import { useLogin } from "./api/useAuth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2, Wallet } from "lucide-react"
+import { Loader2, Wallet, AlertCircle } from "lucide-react"
 import { AxiosError } from "axios"
 
 export function Login() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [sessionExpired, setSessionExpired] = useState(false)
   
+  const [searchParams] = useSearchParams()
   const loginMutation = useLogin()
+
+  useEffect(() => {
+    if (searchParams.get('expired') === 'true') {
+      setSessionExpired(true)
+    }
+  }, [searchParams])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    setSessionExpired(false) 
     loginMutation.mutate({ username, password })
   }
 
@@ -40,13 +49,22 @@ export function Login() {
           
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
+              
+              {sessionExpired && (
+                <div className="p-3 flex items-start gap-3 text-sm text-amber-600 bg-amber-500/10 border border-amber-500/20 rounded-md">
+                  <AlertCircle className="w-5 h-5 shrink-0" />
+                  <p>La tua sessione è scaduta per inattività. Effettua nuovamente l'accesso per continuare.</p>
+                </div>
+              )}
+
+              {/* BANNER ERRORE DI LOGIN */}
               {loginMutation.isError && (
-                <div className="p-3 text-sm text-red-500 bg-red-500/10 rounded-md">
+                <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20 rounded-md">
                     {loginMutation.error instanceof AxiosError 
                     ? loginMutation.error.response?.data?.message || "Errore sconosciuto dal server."
                     : "Errore di connessione."}
                 </div>
-                )}
+              )}
 
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
